@@ -58,7 +58,8 @@ export default class CreateTournament extends React.Component {
     const players = this.state.players;
     for (let i = 0; i < this.state.numberOfPlayers; i++) {
       players[i] = {
-        name: ''
+        name: '',
+        id: i
       }
     }
     this.setState({ players, showAddPlayers: true, loading: false });
