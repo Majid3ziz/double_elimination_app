@@ -15,7 +15,8 @@ const en = {
   player: "Player",
   name: 'Name',
   create: 'Create',
-  fillPlayersNames: 'Fill players\' names:'
+  fillPlayersNames: 'Fill players\' names:',
+  playerNameInvalid: "One of the players' name is invalid."
 };
 const ar = {
   lang: "ar",

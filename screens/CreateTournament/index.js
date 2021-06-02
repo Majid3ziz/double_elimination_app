@@ -10,6 +10,8 @@ import TextPopup from "@components/TextPopup";
 import Button from "@components/smallButton";
 import InputField from "@components/InputField";
 import Constants from "@res/Constants";
+import { createTournamentObject, createPlayerObject, addTournamentToLocalStorage } from "@services/scripts";
+import { NavigationActions, StackActions } from "react-navigation";
 
 export default class CreateTournament extends React.Component {
   constructor() {
@@ -30,15 +32,6 @@ export default class CreateTournament extends React.Component {
     players: []
   };
 
-  componentDidMount() {
-
-  }
-
-  createTournament() {
-    const players = this.state.players;
-
-  }
-
   genericSetState(key, value) {
     this.setState({ [key]: value });
   }
@@ -50,19 +43,15 @@ export default class CreateTournament extends React.Component {
   }
 
   showAddPlayers() {
-    this.setState({ loading: true });
     if (!this.validateNameAndPlayersNumber()) {
-      this.setState({ loading: false });
       return;
     }
     const players = this.state.players;
+    // initialize players
     for (let i = 0; i < this.state.numberOfPlayers; i++) {
-      players[i] = {
-        name: '',
-        id: i
-      }
+      players[i] = createPlayerObject(i, '', null, null);
     }
-    this.setState({ players, showAddPlayers: true, loading: false });
+    this.setState({ players, showAddPlayers: true });
   }
 
   validateNameAndPlayersNumber() {
@@ -78,6 +67,41 @@ export default class CreateTournament extends React.Component {
     return true;
   }
 
+  createTournament = async () => {
+    this.setState({ loading: true });
+    if (!this.validatePlayersNames()) {
+      this.setState({ loading: false });
+      return;
+    }
+    const players = this.state.players;
+    // create dummy player if players number is odd.
+    if (players.length % 2 !== 0) {
+      players[players.length] = createPlayerObject(players.length, '-', null, null);
+    }
+
+    const tournament = createTournamentObject(this.state.tournamentName, players);
+    await addTournamentToLocalStorage(tournament);
+    this.setState({ loading: false });
+    this.props.navigation.dispatch(
+      StackActions.reset({
+        index: 0,
+        key: null,
+        actions: [NavigationActions.navigate({ routeName: "Homepage" })],
+      })
+    );
+  }
+
+  validatePlayersNames() {
+    const langauge = this.context.state.language;
+    const players = this.state.players;
+    for (let i = 0; i < players.length; i++) {
+      if (players[i].name === '') {
+        this.setState({ showTextPopup: true, TextPopupString: langauge.playerNameInvalid });
+        return false;
+      }
+    }
+    return true;
+  }
 
   render() {
     const langauge = this.context.state.language;

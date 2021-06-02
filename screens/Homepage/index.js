@@ -8,25 +8,38 @@ import Spinner from "react-native-loading-spinner-overlay";
 import Colors from "@res/Colors";
 import TextPopup from "@components/TextPopup";
 import Button from "@components/smallButton";
+import { getTournaments } from "@services/scripts";
+import TournamentCard from "@components/TournamentCard";
 
 export default class Homepage extends React.Component {
   constructor() {
     super();
     this.createTournament = this.createTournament.bind(this);
+    this.viewTournament = this.viewTournament.bind(this);
   }
 
   state = {
     loading: false,
     showTextPopup: false,
     TextPopupString: "",
+    tournaments: []
   };
 
   componentDidMount() {
+    this.getTournaments();
+  }
 
+  getTournaments = async () => {
+    const tournaments = await getTournaments();
+    this.setState({ tournaments });
   }
 
   createTournament() {
     this.props.navigation.navigate('CreateTournament');
+  }
+
+  viewTournament() {
+    console.log("hey");
   }
 
   render() {
@@ -47,6 +60,17 @@ export default class Homepage extends React.Component {
             <Text style={styles.label}>{langauge.tournaments}</Text>
             <Button onPress={this.createTournament} text={langauge.addTournament} backgroundColor={Colors.smallButtonColor} textColor={Colors.PrimaryText} btnStyle={styles.button} />
           </View>
+
+          {this.state.tournaments.map((tournament, i) => (
+            <TournamentCard
+              key={i}
+              index={i}
+              viewTournament={this.viewTournament}
+              name={tournament.name}
+              playersCount={tournament.players.length}
+              image={"https://is4-ssl.mzstatic.com/image/thumb/Purple124/v4/8f/a3/57/8fa3572a-f506-7f21-5bc9-651c44ad30e8/source/512x512bb.jpg"}
+            />
+          ))}
         </ScrollView>
       </View>
     );
@@ -62,7 +86,7 @@ const styles = StyleSheet.create({
   },
   label: {
     color: Colors.SecondaryText,
-    fontSize: responsiveFontSize(2.7),
+    fontSize: responsiveFontSize(3),
     fontWeight: "500",
     elevation: 5,
     marginHorizontal: 10,
