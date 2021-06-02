@@ -9,37 +9,40 @@ import Colors from "@res/Colors";
 import TextPopup from "@components/TextPopup";
 import Button from "@components/smallButton";
 import { getTournaments } from "@services/scripts";
-import TournamentCard from "@components/TournamentCard";
+import MatchCard from "@components/MatchCard";
 
-export default class Homepage extends React.Component {
+export default class ManageTournament extends React.Component {
   constructor() {
     super();
-    this.createTournament = this.createTournament.bind(this);
-    this.viewTournament = this.viewTournament.bind(this);
+    this.showPopUp = this.showPopUp.bind(this);
+    this.setWinner = this.setWinner.bind(this);
   }
 
   state = {
     loading: false,
     showTextPopup: false,
     TextPopupString: "",
-    tournaments: []
+    tournament: {},
+    upperBracketCurrentRoundMatches: [],
+    upperBracketCurrentRound: 0
   };
 
   componentDidMount() {
-    this.getTournaments();
+    const tournament = this.props.navigation.getParam("tournament", {});
+    this.setUpperBracketRoundMatches(tournament.upperBracket.rounds[tournament.upperBracket.currentRoundIndex].matches);
+    this.setState({ tournament, upperBracketCurrentRound: tournament.upperBracket.currentRoundIndex });
   }
 
-  getTournaments = async () => {
-    const tournaments = await getTournaments();
-    this.setState({ tournaments });
+  setUpperBracketRoundMatches(matches) {
+    this.setState({ upperBracketCurrentRoundMatches: matches });
   }
 
-  createTournament() {
-    this.props.navigation.navigate('CreateTournament');
+  showPopUp(string) {
+    this.setState({ showTextPopup: true, TextPopupString: string });
   }
 
-  viewTournament(index) {
-    this.props.navigation.navigate('ManageTournament', { tournament: this.state.tournaments[index] });
+  setWinner() {
+
   }
 
   render() {
@@ -56,28 +59,29 @@ export default class Homepage extends React.Component {
         />
 
         <ScrollView showsVerticalScrollIndicator={false}>
-          <View style={styles.upperRow}>
-            <Text style={styles.label}>{langauge.tournaments}</Text>
-            <Button onPress={this.createTournament} text={langauge.addTournament} backgroundColor={Colors.smallButtonColor} textColor={Colors.PrimaryText} btnStyle={styles.button} />
-          </View>
-
-          {this.state.tournaments.map((tournament, i) => (
-            <TournamentCard
-              key={i}
-              index={i}
-              viewTournament={this.viewTournament}
-              name={tournament.name}
-              playersCount={tournament.players.length}
-              image={"https://is4-ssl.mzstatic.com/image/thumb/Purple124/v4/8f/a3/57/8fa3572a-f506-7f21-5bc9-651c44ad30e8/source/512x512bb.jpg"}
+          <Text style={[styles.label, { textAlign: 'center' }]}>{this.state.tournament.name}</Text>
+          <Text style={styles.label}>{langauge.upperBracket}</Text>
+          {this.state.upperBracketCurrentRoundMatches.map((match) => (
+            <MatchCard
+              showPopUp={this.showPopUp}
+              setWinner={this.setWinner}
+              matchNumber={match.number}
+              firstPlayerID={match.players[0].id}
+              firstPlayerName={match.players[0].name}
+              secondPlayerID={match.players[1].id}
+              secondPlayerName={match.players[1].name}
+              winnerID={match.winnerID}
+              key={match.number}
             />
           ))}
+          <Text style={styles.label}>{langauge.lowerBracket}</Text>
         </ScrollView>
       </View>
     );
   }
 }
 
-Homepage.contextType = AppContext;
+ManageTournament.contextType = AppContext;
 
 const styles = StyleSheet.create({
   container: {
@@ -92,15 +96,4 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     marginVertical: 7,
   },
-  upperRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginVertical: 15,
-    borderBottomWidth: 0.5,
-    borderBottomColor: Colors.borderColor
-  },
-  button: {
-    marginHorizontal: 10
-  }
 });

@@ -47,6 +47,7 @@ function createUpperBracketRounds(players) {
     return {
         roundsCount,
         matchesCount,
+        currentRoundIndex: 0,
         rounds,
     };
 }

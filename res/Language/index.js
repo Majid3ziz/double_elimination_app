@@ -16,7 +16,15 @@ const en = {
   name: 'Name',
   create: 'Create',
   fillPlayersNames: 'Fill players\' names:',
-  playerNameInvalid: "One of the players' name is invalid."
+  playerNameInvalid: "One of the players' name is invalid.",
+  upperBracket: "Upper Bracket",
+  lowerBracket: "Lower Bracket",
+  vs: "vs",
+  selectPlayerFirst: "Select a winning player first.",
+  pickWinner: "Pick Winner",
+  confirm: "Confirm",
+  cancel: "Cancel",
+  winner: "Winner"
 };
 const ar = {
   lang: "ar",
