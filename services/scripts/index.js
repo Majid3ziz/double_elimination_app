@@ -4,7 +4,9 @@ export function createTournamentObject(name, players) {
     return {
         upperBracket: createUpperBracketRounds(players),
         lowerBracket: null,
-        currentBracket: 'Upper',
+        currentBracket: 'upper',
+        isBracketArrangingRound: true,
+        isAfterArrangingRound: false,
         name,
         players
     };
@@ -43,7 +45,7 @@ function createUpperBracketRounds(players) {
             assignedPlayers++;
         }
     }
-    rounds[0] = { matches: firstRoundMatches };
+    rounds[0] = { matches: firstRoundMatches, finished: false };
     return {
         roundsCount,
         matchesCount,
@@ -86,4 +88,17 @@ export async function getTournaments() {
         tournaments = JSON.parse(tournaments);
     }
     return tournaments;
+}
+
+export async function saveTournamentChanges(tournament) {
+    let tournaments = await AsyncStorage.getItem("tournaments");
+    tournaments = JSON.parse(tournaments);
+    for (let i = 0; i < tournaments.length; i++) {
+        if (tournaments[i].name === tournament.name) {
+            tournaments[i] = tournament;
+            break;
+        }
+    }
+    await AsyncStorage.setItem("tournaments", JSON.stringify(tournaments));
+    return;
 }

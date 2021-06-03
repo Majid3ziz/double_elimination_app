@@ -10,6 +10,7 @@ import TextPopup from "@components/TextPopup";
 import Button from "@components/smallButton";
 import { getTournaments } from "@services/scripts";
 import TournamentCard from "@components/TournamentCard";
+import { NavigationEvents } from 'react-navigation';
 
 export default class Homepage extends React.Component {
   constructor() {
@@ -30,8 +31,9 @@ export default class Homepage extends React.Component {
   }
 
   getTournaments = async () => {
+    this.setState({ loading: true });
     const tournaments = await getTournaments();
-    this.setState({ tournaments });
+    this.setState({ tournaments, loading: false });
   }
 
   createTournament() {
@@ -46,6 +48,7 @@ export default class Homepage extends React.Component {
     const langauge = this.context.state.language;
     return (
       <View style={styles.container}>
+        <NavigationEvents onDidFocus={() => this.getTournaments()} />
         <Spinner visible={this.state.loading} textContent={langauge.loading} textStyle={styles.spinnerTextStyle} />
         <TextPopup
           onPress={() => {

@@ -24,7 +24,12 @@ const en = {
   pickWinner: "Pick Winner",
   confirm: "Confirm",
   cancel: "Cancel",
-  winner: "Winner"
+  winner: "Winner",
+  tapOnPlayerHint: "Tap on player\'s name to choose as winner",
+  round: "Round",
+  matchesResultsInvalid: "One or more of the matches results are invalid. Make sure to assign a winner to each match.",
+  completeLowerBracketFirst: "Round does not exist. You should complete lower bracket matches first to advance to other rounds. ",
+  completeUpperBracketFirst: "Round does not exist. You should complete upper bracket matches first to advance to other rounds. "
 };
 const ar = {
   lang: "ar",
