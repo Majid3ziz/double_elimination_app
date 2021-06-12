@@ -10,7 +10,7 @@ import TextPopup from "@components/TextPopup";
 import Button from "@components/smallButton";
 import InputField from "@components/InputField";
 import Constants from "@res/Constants";
-import { createTournamentObject, createPlayerObject, addTournamentToLocalStorage } from "@services/scripts";
+import { createTournamentObject, createPlayerObject, addTournamentToLocalStorage, checkIfTournamentNameExist } from "@services/scripts";
 import { NavigationActions, StackActions } from "react-navigation";
 import CustomHeaderWithBackArrow from "@components/CustomHeaderWithBackArrow";
 
@@ -43,8 +43,9 @@ export default class CreateTournament extends React.Component {
     this.setState({ players });
   }
 
-  showAddPlayers() {
-    if (!this.validateNameAndPlayersNumber()) {
+  showAddPlayers = async () => {
+    const valid = !(await this.validateNameAndPlayersNumber());
+    if (valid) {
       return;
     }
     const players = this.state.players;
@@ -55,7 +56,7 @@ export default class CreateTournament extends React.Component {
     this.setState({ players, showAddPlayers: true });
   }
 
-  validateNameAndPlayersNumber() {
+  validateNameAndPlayersNumber = async () => {
     const langauge = this.context.state.language;
     if (parseInt(this.state.numberOfPlayers) < Constants.minNumberOfPlayers) {
       this.setState({ showTextPopup: true, TextPopupString: langauge.playersNumberInvalid });
@@ -63,6 +64,11 @@ export default class CreateTournament extends React.Component {
     }
     if (this.state.tournamentName === "") {
       this.setState({ showTextPopup: true, TextPopupString: langauge.tournamentNameInvalid });
+      return false;
+    }
+
+    if (await checkIfTournamentNameExist(this.state.tournamentName)) {
+      this.setState({ showTextPopup: true, TextPopupString: langauge.tournamentExists });
       return false;
     }
     return true;

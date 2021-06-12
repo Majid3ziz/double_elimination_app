@@ -35,7 +35,7 @@ const en = {
   bracketFinished: "Bracket matches finished.",
   finalMatches: "Final matches",
   tournamentWinner: "Tournament Winner is",
-
+  tournamentExists: "Tournament name already exists."
 };
 const ar = {
   lang: "ar",

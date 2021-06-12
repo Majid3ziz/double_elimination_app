@@ -80,8 +80,8 @@ export function createLowerBracket(tournament) {
         matchNumber++;
         assignedPlayers = 0;
         while (assignedPlayers !== 2) {
-            if (upperBracketPassedMatches[i + assignedPlayers] !== null) {
-                // ensures creating a game for one person if matches size is odd.
+            // ensures creating a game for one person if matches size is odd.
+            if (upperBracketPassedMatches[i + assignedPlayers] !== undefined) {
                 winnerID = upperBracketPassedMatches[i + assignedPlayers].winnerID;
                 if (winnerID === upperBracketPassedMatches[i + assignedPlayers].players[0].id) {
                     loserPLayer = upperBracketPassedMatches[i + assignedPlayers].players[1];
@@ -182,8 +182,6 @@ export function createLowerBracketRound(lastRoundMatches, upperLastRoundMatches,
 }
 
 export function createFinalMatch(lastUpperMatch, lastLowerMatch) {
-    console.log(lastUpperMatch);
-    console.log(lastLowerMatch);
     let upperPlayer;
     let lowerPlayer;
     if (lastUpperMatch.winnerID === lastUpperMatch.players[0].id) {
@@ -226,6 +224,24 @@ function createRound(matches) {
         finished: false,
     };
 }
+
+
+export async function checkIfTournamentNameExist(tournamentName) {
+    let tournaments = await AsyncStorage.getItem("tournaments");
+    if (tournaments === null) {
+        return false;
+    } else {
+        tournaments = JSON.parse(tournaments);
+        for (let i = 0; i < tournaments.length; i++) {
+            if (tournaments[i].name === tournamentName) {
+                return true;
+                break;
+            }
+        }
+        return false
+    }
+}
+
 
 export async function addTournamentToLocalStorage(tournament) {
     let tournaments = await AsyncStorage.getItem("tournaments");
