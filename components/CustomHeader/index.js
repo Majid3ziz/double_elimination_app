@@ -1,8 +1,7 @@
 import React from "react";
-import { Header, Icon } from "react-native-elements";
-import { responsiveWidth, responsiveFontSize } from "react-native-responsive-dimensions";
+import { Header } from "react-native-elements";
+import { responsiveFontSize } from "react-native-responsive-dimensions";
 import Colors from "@res/Colors";
-import { Image } from "react-native";
 export default class CustomHeader extends React.Component {
   render() {
     return (

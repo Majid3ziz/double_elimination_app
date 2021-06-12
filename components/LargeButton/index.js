@@ -1,6 +1,6 @@
 import React from "react";
-import { StyleSheet, Text, View } from 'react-native';
-import { responsiveWidth, responsiveFontSize, responsiveHeight } from 'react-native-responsive-dimensions';
+import { StyleSheet, Text } from 'react-native';
+import { responsiveFontSize } from 'react-native-responsive-dimensions';
 import AppContext from "@services/provider";
 import { LinearGradient } from 'expo-linear-gradient';
 

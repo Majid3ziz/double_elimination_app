@@ -12,6 +12,7 @@ import InputField from "@components/InputField";
 import Constants from "@res/Constants";
 import { createTournamentObject, createPlayerObject, addTournamentToLocalStorage } from "@services/scripts";
 import { NavigationActions, StackActions } from "react-navigation";
+import CustomHeaderWithBackArrow from "@components/CustomHeaderWithBackArrow";
 
 export default class CreateTournament extends React.Component {
   constructor() {
@@ -107,6 +108,7 @@ export default class CreateTournament extends React.Component {
     const langauge = this.context.state.language;
     return (
       <View style={styles.container}>
+        <CustomHeaderWithBackArrow title={langauge.addTournament} navigation={this.props.navigation} />
         <Spinner visible={this.state.loading} textContent={langauge.loading} textStyle={styles.spinnerTextStyle} />
         <TextPopup
           onPress={() => {
@@ -116,7 +118,7 @@ export default class CreateTournament extends React.Component {
           text={this.state.TextPopupString}
         />
 
-        <ScrollView showsVerticalScrollIndicator={false}>
+        <ScrollView contentContainerStyle={styles.innerContainer} showsVerticalScrollIndicator={false}>
           {this.state.showAddPlayers ? null : (
             <View>
               <InputField onChangeText={this.genericSetState} stateKey={"tournamentName"} defaultValue={this.state.tournamentName} editable maxLength={50} style={styles.InputField} placeholder={langauge.tournamentName} keyboardType={"default"} />
@@ -134,7 +136,7 @@ export default class CreateTournament extends React.Component {
           {this.state.players.map((value, i) => (
             <InputField onChangeText={this.setPlayerName} stateKey={i} defaultValue={this.state.players[i].name} editable maxLength={50} style={styles.InputField} placeholder={langauge.player + " " + (i + 1) + " Name"} keyboardType={"default"} key={i} />
           ))}
-          <Button onPress={this.state.showAddPlayers ? this.createTournament : this.showAddPlayers} text={this.state.showAddPlayers ? langauge.create : langauge.next} backgroundColor={Colors.smallButtonColor} textColor={Colors.PrimaryText} btnStyle={styles.button} />
+          <Button onPress={this.state.showAddPlayers ? this.createTournament : this.showAddPlayers} text={this.state.showAddPlayers ? langauge.create : langauge.next} textColor={Colors.PrimaryText} btnStyle={styles.button} />
         </ScrollView>
       </View>
     );
@@ -147,13 +149,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.secondaryBackgroundColor,
-    paddingTop: 30,
   },
   InputField: {
     alignSelf: "center",
     width: responsiveWidth(60),
     margin: 5,
     marginBottom: 30,
+  },
+  innerContainer: {
+    marginTop: 30,
+    paddingBottom: 30
   },
   fillLabel: {
     alignSelf: "center",
@@ -173,5 +178,6 @@ const styles = StyleSheet.create({
     width: responsiveWidth(30),
     alignSelf: "center",
     marginBottom: 30,
+    backgroundColor: Colors.smallButtonColor
   },
 });

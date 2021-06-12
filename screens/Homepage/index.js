@@ -2,7 +2,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import React from "react";
 import { ScrollView, View, StyleSheet, Text } from "react-native";
-import { responsiveHeight, responsiveWidth, responsiveFontSize } from "react-native-responsive-dimensions";
+import { responsiveFontSize } from "react-native-responsive-dimensions";
 import AppContext from "@services/provider";
 import Spinner from "react-native-loading-spinner-overlay";
 import Colors from "@res/Colors";
@@ -11,6 +11,7 @@ import Button from "@components/smallButton";
 import { getTournaments } from "@services/scripts";
 import TournamentCard from "@components/TournamentCard";
 import { NavigationEvents } from 'react-navigation';
+import CustomHeader from "@components/CustomHeader";
 
 export default class Homepage extends React.Component {
   constructor() {
@@ -49,6 +50,7 @@ export default class Homepage extends React.Component {
     return (
       <View style={styles.container}>
         <NavigationEvents onDidFocus={() => this.getTournaments()} />
+        <CustomHeader title={langauge.home} />
         <Spinner visible={this.state.loading} textContent={langauge.loading} textStyle={styles.spinnerTextStyle} />
         <TextPopup
           onPress={() => {
@@ -61,7 +63,7 @@ export default class Homepage extends React.Component {
         <ScrollView showsVerticalScrollIndicator={false}>
           <View style={styles.upperRow}>
             <Text style={styles.label}>{langauge.tournaments}</Text>
-            <Button onPress={this.createTournament} text={langauge.addTournament} backgroundColor={Colors.smallButtonColor} textColor={Colors.PrimaryText} btnStyle={styles.button} />
+            <Button onPress={this.createTournament} text={langauge.addTournament} textColor={Colors.PrimaryText} btnStyle={styles.button} />
           </View>
 
           {this.state.tournaments.map((tournament, i) => (
@@ -104,6 +106,7 @@ const styles = StyleSheet.create({
     borderBottomColor: Colors.borderColor
   },
   button: {
-    marginHorizontal: 10
+    marginHorizontal: 10,
+    backgroundColor: Colors.smallButtonColor
   }
 });

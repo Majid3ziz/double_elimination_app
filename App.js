@@ -61,10 +61,6 @@ class App extends React.Component {
     await this.loadLangauge();
   };
 
-  setUserProfile = async (value) => {
-    this.setState({ profile: value });
-  };
-
   render() {
     if (this.state.isReady) {
       return (

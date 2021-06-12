@@ -73,7 +73,7 @@ export default class MatchCard extends React.Component {
         <View style={styles.buttonsRow}>
           <Button onPress={this.state.showPickWinner ? this.setWinner : this.showPickWinner} text={this.state.showPickWinner ? langauge.confirm : langauge.pickWinner} backgroundColor={Colors.smallButtonColor} textColor={Colors.PrimaryText} btnStyle={styles.button} />
           {this.state.showPickWinner ?
-            <Button onPress={this.cancel} text={langauge.cancel} backgroundColor={Colors.smallButtonColor} textColor={Colors.PrimaryText} btnStyle={styles.button} />
+            <Button onPress={this.cancel} text={langauge.cancel} textColor={Colors.PrimaryText} btnStyle={styles.button} />
             : null}
         </View>
 
@@ -119,6 +119,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   button: {
-    marginHorizontal: 5
+    marginHorizontal: 5,
+    backgroundColor: Colors.smallButtonColor
   }
 });

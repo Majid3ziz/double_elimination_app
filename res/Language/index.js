@@ -6,6 +6,7 @@ const en = {
   loading: "Loading...",
   ok: "OK",
   notification: "Notification",
+  home: "Home",
   addTournament: "Create a Tournament",
   tournamentName: "Tournament Name",
   numberOfPlayers: "Number Of Players",
@@ -32,6 +33,9 @@ const en = {
   completeLowerBracketFirst: "Round does not exist. You should complete lower bracket matches first to advance to other rounds. ",
   completeUpperBracketFirst: "Round does not exist. You should complete upper bracket matches first to advance to other rounds. ",
   bracketFinished: "Bracket matches finished.",
+  finalMatches: "Final matches",
+  tournamentWinner: "Tournament Winner is",
+
 };
 const ar = {
   lang: "ar",

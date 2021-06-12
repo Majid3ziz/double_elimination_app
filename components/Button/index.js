@@ -1,13 +1,13 @@
 import React from "react";
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import { responsiveWidth, responsiveFontSize, responsiveHeight } from 'react-native-responsive-dimensions';
+import { StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { responsiveFontSize } from 'react-native-responsive-dimensions';
 import AppContext from "@services/provider";
 
 export default class Button extends React.Component {
 
     render() {
         return (
-            <TouchableOpacity onPress={() => this.props.onPress()} style={[styles.container, this.props.btnStyle, { backgroundColor: this.props.backgroundColor }]}>
+            <TouchableOpacity onPress={() => this.props.onPress()} style={[styles.container, this.props.btnStyle]}>
                 <Text style={[styles.label, { color: this.props.textColor }]}>{this.props.text}</Text>
             </TouchableOpacity>
         );
