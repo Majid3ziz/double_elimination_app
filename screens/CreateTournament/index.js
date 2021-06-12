@@ -29,7 +29,7 @@ export default class CreateTournament extends React.Component {
     tournamentName: "",
     numberOfPlayers: 0,
     showAddPlayers: false,
-    players: []
+    players: [],
   };
 
   genericSetState(key, value) {
@@ -49,7 +49,7 @@ export default class CreateTournament extends React.Component {
     const players = this.state.players;
     // initialize players
     for (let i = 0; i < this.state.numberOfPlayers; i++) {
-      players[i] = createPlayerObject(i, '', null, null);
+      players[i] = createPlayerObject(i, "");
     }
     this.setState({ players, showAddPlayers: true });
   }
@@ -60,7 +60,7 @@ export default class CreateTournament extends React.Component {
       this.setState({ showTextPopup: true, TextPopupString: langauge.playersNumberInvalid });
       return false;
     }
-    if (this.state.tournamentName === '') {
+    if (this.state.tournamentName === "") {
       this.setState({ showTextPopup: true, TextPopupString: langauge.tournamentNameInvalid });
       return false;
     }
@@ -76,7 +76,7 @@ export default class CreateTournament extends React.Component {
     const players = this.state.players;
     // create dummy player if players number is odd.
     if (players.length % 2 !== 0) {
-      players[players.length] = createPlayerObject(players.length, '-', null, null);
+      players[players.length] = createPlayerObject(players.length, "-");
     }
 
     const tournament = createTournamentObject(this.state.tournamentName, players);
@@ -89,13 +89,13 @@ export default class CreateTournament extends React.Component {
         actions: [NavigationActions.navigate({ routeName: "Homepage" })],
       })
     );
-  }
+  };
 
   validatePlayersNames() {
     const langauge = this.context.state.language;
     const players = this.state.players;
     for (let i = 0; i < players.length; i++) {
-      if (players[i].name === '') {
+      if (players[i].name === "") {
         this.setState({ showTextPopup: true, TextPopupString: langauge.playerNameInvalid });
         return false;
       }
@@ -117,49 +117,22 @@ export default class CreateTournament extends React.Component {
         />
 
         <ScrollView showsVerticalScrollIndicator={false}>
-          {this.state.showAddPlayers ? null :
+          {this.state.showAddPlayers ? null : (
             <View>
-              <InputField
-                onChangeText={this.genericSetState}
-                stateKey={'tournamentName'}
-                defaultValue={this.state.tournamentName}
-                editable
-                maxLength={50}
-                style={styles.InputField}
-                placeholder={langauge.tournamentName}
-                keyboardType={'default'}
-              />
-              <InputField
-                onChangeText={this.genericSetState}
-                stateKey={'numberOfPlayers'}
-                defaultValue={''}
-                editable
-                maxLength={10}
-                style={styles.InputField}
-                placeholder={langauge.numberOfPlayers}
-                keyboardType={'numeric'}
-              />
+              <InputField onChangeText={this.genericSetState} stateKey={"tournamentName"} defaultValue={this.state.tournamentName} editable maxLength={50} style={styles.InputField} placeholder={langauge.tournamentName} keyboardType={"default"} />
+              <InputField onChangeText={this.genericSetState} stateKey={"numberOfPlayers"} defaultValue={""} editable maxLength={10} style={styles.InputField} placeholder={langauge.numberOfPlayers} keyboardType={"numeric"} />
             </View>
-          }
-          {this.state.showAddPlayers ?
+          )}
+          {this.state.showAddPlayers ? (
             <View>
-              <Text style={styles.label}>{langauge.tournamentName + ': ' + this.state.tournamentName}</Text>
-              <Text style={styles.label}>{langauge.numberOfPlayers + ': ' + this.state.numberOfPlayers}</Text>
+              <Text style={styles.label}>{langauge.tournamentName + ": " + this.state.tournamentName}</Text>
+              <Text style={styles.label}>{langauge.numberOfPlayers + ": " + this.state.numberOfPlayers}</Text>
               <Text style={[styles.label, styles.fillLabel]}>{langauge.fillPlayersNames}</Text>
-            </View> : null}
+            </View>
+          ) : null}
 
           {this.state.players.map((value, i) => (
-            <InputField
-              onChangeText={this.setPlayerName}
-              stateKey={i}
-              defaultValue={this.state.players[i].name}
-              editable
-              maxLength={50}
-              style={styles.InputField}
-              placeholder={langauge.player + ' ' + (i + 1) + ' Name'}
-              keyboardType={'default'}
-              key={i}
-            />
+            <InputField onChangeText={this.setPlayerName} stateKey={i} defaultValue={this.state.players[i].name} editable maxLength={50} style={styles.InputField} placeholder={langauge.player + " " + (i + 1) + " Name"} keyboardType={"default"} key={i} />
           ))}
           <Button onPress={this.state.showAddPlayers ? this.createTournament : this.showAddPlayers} text={this.state.showAddPlayers ? langauge.create : langauge.next} backgroundColor={Colors.smallButtonColor} textColor={Colors.PrimaryText} btnStyle={styles.button} />
         </ScrollView>
@@ -174,18 +147,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.secondaryBackgroundColor,
-    paddingTop: 30
+    paddingTop: 30,
   },
   InputField: {
-    alignSelf: 'center',
+    alignSelf: "center",
     width: responsiveWidth(60),
     margin: 5,
-    marginBottom: 30
+    marginBottom: 30,
   },
   fillLabel: {
-    alignSelf: 'center',
+    alignSelf: "center",
     marginTop: 20,
-    marginBottom: 10
+    marginBottom: 10,
   },
   label: {
     color: Colors.SecondaryText,
@@ -198,7 +171,7 @@ const styles = StyleSheet.create({
   button: {
     marginHorizontal: 5,
     width: responsiveWidth(30),
-    alignSelf: 'center',
-    marginBottom: 30
+    alignSelf: "center",
+    marginBottom: 30,
   },
 });

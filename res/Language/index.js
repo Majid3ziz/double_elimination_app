@@ -14,9 +14,9 @@ const en = {
   playersNumberInvalid: "Number of players must be four or more.",
   tournamentNameInvalid: "Tournament name must not be empty.",
   player: "Player",
-  name: 'Name',
-  create: 'Create',
-  fillPlayersNames: 'Fill players\' names:',
+  name: "Name",
+  create: "Create",
+  fillPlayersNames: "Fill players' names:",
   playerNameInvalid: "One of the players' name is invalid.",
   upperBracket: "Upper Bracket",
   lowerBracket: "Lower Bracket",
@@ -26,11 +26,12 @@ const en = {
   confirm: "Confirm",
   cancel: "Cancel",
   winner: "Winner",
-  tapOnPlayerHint: "Tap on player\'s name to choose as winner",
+  tapOnPlayerHint: "Tap on player's name to choose as winner",
   round: "Round",
   matchesResultsInvalid: "One or more of the matches results are invalid. Make sure to assign a winner to each match.",
   completeLowerBracketFirst: "Round does not exist. You should complete lower bracket matches first to advance to other rounds. ",
-  completeUpperBracketFirst: "Round does not exist. You should complete upper bracket matches first to advance to other rounds. "
+  completeUpperBracketFirst: "Round does not exist. You should complete upper bracket matches first to advance to other rounds. ",
+  bracketFinished: "Bracket matches finished.",
 };
 const ar = {
   lang: "ar",
