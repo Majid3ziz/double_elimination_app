@@ -10,6 +10,7 @@ const en = {
   tournamentName: "Tournament Name",
   numberOfPlayers: "Number Of Players",
   next: "Next",
+  previous: "Previous",
   playersNumberInvalid: "Number of players must be four or more.",
   tournamentNameInvalid: "Tournament name must not be empty.",
   player: "Player",

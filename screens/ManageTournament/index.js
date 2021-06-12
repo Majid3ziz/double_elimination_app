@@ -8,7 +8,7 @@ import Spinner from "react-native-loading-spinner-overlay";
 import Colors from "@res/Colors";
 import TextPopup from "@components/TextPopup";
 import Button from "@components/smallButton";
-import { saveTournamentChanges } from "@services/scripts";
+import { saveTournamentChanges, createLowerBracket, createUpperBracketRound, createLowerBracketRound } from "@services/scripts";
 import MatchCard from "@components/MatchCard";
 
 export default class ManageTournament extends React.Component {
@@ -16,6 +16,10 @@ export default class ManageTournament extends React.Component {
     super();
     this.showPopUp = this.showPopUp.bind(this);
     this.setWinner = this.setWinner.bind(this);
+    this.goNextUpper = this.goNextUpper.bind(this);
+    this.goPrevUpper = this.goPrevUpper.bind(this);
+    this.goNextLower = this.goNextLower.bind(this);
+    this.goPrevLower = this.goPrevLower.bind(this);
   }
 
   state = {
@@ -34,9 +38,11 @@ export default class ManageTournament extends React.Component {
   componentDidMount() {
     const tournament = this.props.navigation.getParam("tournament", {});
     this.setUpperBracketRoundMatches(tournament.upperBracket.rounds[tournament.upperBracket.currentRoundIndex].matches);
-    if (tournament.lowerBracket !== null)
-      setLowerBracketRoundMatches(tournament.lowerBracket.rounds[tournament.lowerBracket.currentRoundIndex].matches)
-    this.setState({ tournament, upperBracketCurrentRound: tournament.upperBracket.currentRoundIndex, upperBracketRoundsLength: tournament.upperBracket.roundsCount, lowerBracketRoundsLength: tournament.lowerBracket === null ? 0 : tournament.lowerBracket.roundsCount });
+    if (tournament.lowerBracket !== null) {
+      this.setLowerBracketRoundMatches(tournament.lowerBracket.rounds[tournament.lowerBracket.currentRoundIndex].matches)
+      this.setState({ lowerBracketRoundsLength: tournament.lowerBracket.roundsCount, lowerBracketCurrentRound: tournament.lowerBracket.currentRoundIndex })
+    }
+    this.setState({ tournament, upperBracketCurrentRound: tournament.upperBracket.currentRoundIndex, upperBracketRoundsLength: tournament.upperBracket.roundsCount });
   }
 
   setUpperBracketRoundMatches(matches) {
@@ -75,13 +81,56 @@ export default class ManageTournament extends React.Component {
   }
 
   goToRound(bracket, index) {
+    const tournament = this.state.tournament;
+    console.log(tournament);
     const langauge = this.context.state.language;
     let currentRound;
     if (bracket === 'upper') {
-      currentRound = this.state.tournament.upperBracket.rounds[tournament.upperBracket.currentRoundIndex];
+      currentRound = tournament.upperBracket.rounds[tournament.upperBracket.currentRoundIndex];
     } else {
-      currentRound = this.state.tournament.lowerBracket.rounds[tournament.upperBracket.currentRoundIndex];
+      if (tournament.lowerBracket === null) {
+        this.setState({ showTextPopup: true, TextPopupString: langauge.completeUpperBracketFirst });
+        return;
+      }
+      currentRound = tournament.lowerBracket.rounds[tournament.lowerBracket.currentRoundIndex];
     }
+
+    // supports navigation to older rounds.
+    if (bracket === 'upper') {
+      if (index <= tournament.upperBracket.currentRoundIndex) {
+        if (tournament.upperBracket.rounds[index] === undefined) {
+          this.setState({ showTextPopup: true, TextPopupString: langauge.completeLowerBracketFirst });
+          return;
+        }
+        this.setUpperBracketRoundMatches(tournament.upperBracket.rounds[index].matches);
+        this.setState({ upperBracketCurrentRound: index });
+        return;
+      } else {
+        if (tournament.currentBracket !== 'upper') {
+          this.setState({ showTextPopup: true, TextPopupString: langauge.completeLowerBracketFirst });
+          return;
+        }
+      }
+    }
+
+    if (bracket === 'lower' && tournament.lowerBracket !== null) {
+      if (index <= tournament.lowerBracket.currentRoundIndex) {
+        if (tournament.lowerBracket.rounds[index] === undefined) {
+          this.setState({ showTextPopup: true, TextPopupString: langauge.completeUpperBracketFirst });
+          return;
+        }
+        this.setLowerBracketRoundMatches(tournament.lowerBracket.rounds[index].matches);
+        this.setState({ lowerBracketCurrentRound: index });
+        return;
+      } else {
+        if (tournament.currentBracket !== 'lower') {
+          this.setState({ showTextPopup: true, TextPopupString: langauge.completeUpperBracketFirst });
+          return;
+        }
+      }
+    }
+
+    // navigation to new rounds
     if (!currentRound.finished) {
       // validate matches and create new round matches.
       if (!this.validateAllMatches(currentRound.matches)) {
@@ -89,41 +138,57 @@ export default class ManageTournament extends React.Component {
         return;
       }
       if (this.state.tournament.isBracketArrangingRound) {
-        const lowerBracket = createLowerBracket(this.state.tournament);
-        const tournament = this.state.tournament;
+        currentRound.finished = true;
+        const lowerBracket = createLowerBracket(tournament);
         tournament.lowerBracket = lowerBracket;
         tournament.isBracketArrangingRound = false;
-        this.setState({ tournament });
+        tournament.currentBracket = 'lower';
+        tournament.lowerBracket.currentRoundIndex = 0;
+        this.setState({ tournament, lowerBracketCurrentRoundMatches: tournament.lowerBracket.rounds[0].matches, lowerBracketRoundsLength: tournament.lowerBracket.roundsCount });
         saveTournamentChanges(tournament);
-      } else if (this.state.tournament.currentBracket === 'upper') {
+      } else if (tournament.currentBracket === 'upper') {
         currentRound.finished = true;
         // create new lower bracket round
+        tournament.lowerBracket.shouldPlayConsecutiveRound = true;
+        const lastRoundMatches = tournament.lowerBracket.rounds[tournament.lowerBracket.currentRoundIndex].matches;
+        const upperLastRoundMatches = tournament.upperBracket.rounds[tournament.upperBracket.currentRoundIndex].matches;
+        const lastMatchNumber = upperLastRoundMatches[upperLastRoundMatches.length - 1].number;
+        const newRound = createLowerBracketRound(lastRoundMatches, upperLastRoundMatches, lastMatchNumber, false);
+        console.log(newRound);
+        tournament.lowerBracket.rounds.push(newRound);
+        tournament.currentBracket = 'lower';
+        tournament.lowerBracket.currentRoundIndex++;
+        this.setState({ tournament, lowerBracketCurrentRoundMatches: newRound.matches, lowerBracketCurrentRound: tournament.lowerBracket.currentRoundIndex });
+        saveTournamentChanges(tournament);
       } else {
         currentRound.finished = true; // if lower bracket round finishes, check the need to create a consecutive round.
-        if (this.state.tournament.lowerBracket.shouldPlayConsecutiveRound && this.state.tournament.isAfterArrangingRound) {
+        if (tournament.lowerBracket.shouldPlayConsecutiveRound && tournament.isAfterArrangingRound) {
           // create a consecutive round.
-          this.state.tournament.lowerBracket.shouldPlayConsecutiveRound = false;
+          tournament.lowerBracket.shouldPlayConsecutiveRound = false;
+          const lastRoundMatches = tournament.lowerBracket.rounds[tournament.lowerBracket.currentRoundIndex].matches;
+          const upperLastRoundMatches = tournament.upperBracket.rounds[tournament.upperBracket.currentRoundIndex].matches;
+          const lastMatchNumber = lastRoundMatches[lastRoundMatches.length - 1].number;
+          const newRound = createLowerBracketRound(lastRoundMatches, upperLastRoundMatches, lastMatchNumber, true);
+          console.log(newRound);
+          tournament.lowerBracket.rounds.push(newRound);
+          tournament.currentBracket = 'lower';
+          tournament.lowerBracket.currentRoundIndex++;
+          this.setState({ tournament, lowerBracketCurrentRoundMatches: newRound.matches, lowerBracketCurrentRound: tournament.lowerBracket.currentRoundIndex });
+          saveTournamentChanges(tournament);
         } else {
           // create new upper bracket round
-          this.state.tournament.isAfterArrangingRound = true;
+          currentRound.finished = true;
+          tournament.isAfterArrangingRound = true;
+          const prevRoundMatches = tournament.lowerBracket.rounds[tournament.lowerBracket.currentRoundIndex].matches;
+          const lastMatchNumber = prevRoundMatches[prevRoundMatches.length - 1].number;
+          const upperCurrentMatches = tournament.upperBracket.rounds[tournament.upperBracket.currentRoundIndex].matches;
+          const newRound = createUpperBracketRound(upperCurrentMatches, lastMatchNumber);
+          tournament.upperBracket.rounds.push(newRound);
+          tournament.currentBracket = 'upper';
+          tournament.upperBracket.currentRoundIndex++;
+          this.setState({ tournament, upperBracketCurrentRoundMatches: newRound.matches, upperBracketCurrentRound: tournament.upperBracket.currentRoundIndex });
+          saveTournamentChanges(tournament);
         }
-      }
-    } else {
-      // supports navigation to older rounds.
-      if (bracket === 'upper') {
-        if (this.state.tournament.upperBracket.rounds[index] === null) {
-          this.setState({ showTextPopup: true, TextPopupString: langauge.completeLowerBracketFirst });
-          return;
-        }
-        this.setUpperBracketRoundMatches(this.state.tournament.upperBracket.rounds[index].matches);
-        this.setState({ upperBracketCurrentRound: index });
-      } else {
-        if (this.state.tournament.lowerBracket.rounds[index] === null) {
-          this.setState({ showTextPopup: true, TextPopupString: langauge.completeUpperBracketFirst });
-          return;
-        }
-        this.setLowerBracketRoundMatches(this.state.tournament.lowerBracket.rounds[index].matches);
-        this.setState({ lowerBracketCurrentRound: index });
       }
     }
   }
@@ -141,6 +206,18 @@ export default class ManageTournament extends React.Component {
     return false
   }
 
+  goPrevUpper() {
+    this.goToRound('upper', this.state.upperBracketCurrentRound - 1);
+  }
+  goNextUpper() {
+    this.goToRound('upper', this.state.upperBracketCurrentRound + 1);
+  }
+  goPrevLower() {
+    this.goToRound('lower', this.state.lowerBracketCurrentRound - 1);
+  }
+  goNextLower() {
+    this.goToRound('lower', this.state.lowerBracketCurrentRound + 1);
+  }
   render() {
     const langauge = this.context.state.language;
     return (
@@ -158,7 +235,13 @@ export default class ManageTournament extends React.Component {
           <Text style={[styles.label, { textAlign: 'center' }]}>{this.state.tournament.name}</Text>
           <View style={styles.bracketRow}>
             <Text style={styles.label}>{langauge.upperBracket}</Text>
-            <Text style={styles.label}>{langauge.round + " " + (this.state.upperBracketCurrentRound + 1) + '/' + this.state.upperBracketRoundsLength}</Text>
+            <View style={styles.roundContainer}>
+              <Text style={styles.label}>{langauge.round + " " + (this.state.upperBracketCurrentRound + 1) + '/' + this.state.upperBracketRoundsLength}</Text>
+              <View style={styles.buttonsRow}>
+                <Button onPress={this.goPrevUpper} text={langauge.previous} backgroundColor={Colors.smallButtonColor} textColor={Colors.PrimaryText} btnStyle={styles.button} />
+                <Button onPress={this.goNextUpper} text={langauge.next} backgroundColor={Colors.smallButtonColor} textColor={Colors.PrimaryText} btnStyle={styles.button} />
+              </View>
+            </View>
           </View>
           <View style={styles.matchesContainer}>
             {this.state.upperBracketCurrentRoundMatches.map((match) => (
@@ -168,15 +251,40 @@ export default class ManageTournament extends React.Component {
                 matchNumber={match.number}
                 firstPlayerID={match.players[0].id}
                 firstPlayerName={match.players[0].name}
-                secondPlayerID={match.players[1].id}
-                secondPlayerName={match.players[1].name}
+                secondPlayerID={match.players[1] === null ? null : match.players[1].id}
+                secondPlayerName={match.players[1] === null ? '-' : match.players[1].name}
                 winnerID={match.winnerID}
                 key={match.number}
                 bracket={'upper'}
               />
             ))}
           </View>
-          <Text style={styles.label}>{langauge.lowerBracket}</Text>
+          <View style={styles.bracketRow}>
+            <Text style={styles.label}>{langauge.lowerBracket}</Text>
+            <View style={styles.roundContainer}>
+              <Text style={styles.label}>{langauge.round + " " + (this.state.lowerBracketCurrentRound + 1) + '/' + this.state.lowerBracketRoundsLength}</Text>
+              <View style={styles.buttonsRow}>
+                <Button onPress={this.goPrevLower} text={langauge.previous} backgroundColor={Colors.smallButtonColor} textColor={Colors.PrimaryText} btnStyle={styles.button} />
+                <Button onPress={this.goNextLower} text={langauge.next} backgroundColor={Colors.smallButtonColor} textColor={Colors.PrimaryText} btnStyle={styles.button} />
+              </View>
+            </View>
+          </View>
+          <View style={styles.matchesContainer}>
+            {this.state.lowerBracketCurrentRoundMatches.map((match) => (
+              <MatchCard
+                showPopUp={this.showPopUp}
+                setWinner={this.setWinner}
+                matchNumber={match.number}
+                firstPlayerID={match.players[0].id}
+                firstPlayerName={match.players[0].name}
+                secondPlayerID={match.players[1] === null ? null : match.players[1].id}
+                secondPlayerName={match.players[1] === null ? '-' : match.players[1].name}
+                winnerID={match.winnerID}
+                key={match.number}
+                bracket={'lower'}
+              />
+            ))}
+          </View>
         </ScrollView>
       </View>
     );
@@ -206,5 +314,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center'
+  },
+  roundContainer: {
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  buttonsRow: {
+    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginTop: 5
+  },
+  button: {
+    marginHorizontal: 5
   }
 });
