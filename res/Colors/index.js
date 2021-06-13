@@ -11,7 +11,8 @@ const Colors = {
   secondaryBackgroundColor: "#fbfff1",
   PopUpBackground: "#b0e8b0",
   textFields: "#f9f9f9",
-  borderColor: "#000"
+  borderColor: "#000",
+  redAlert: "#e0474c", // not the game but the color.
 };
 
 export default Colors;

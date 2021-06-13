@@ -34,7 +34,7 @@ export default class TournamentCard extends React.Component {
 TournamentCard.contextType = AppContext;
 const styles = StyleSheet.create({
   container: {
-    width: responsiveWidth(90),
+    width: responsiveWidth(85),
     height: responsiveHeight(12),
     alignSelf: "center",
     borderRadius: 15,
@@ -47,13 +47,13 @@ const styles = StyleSheet.create({
   nameRow: {
     marginHorizontal: 5,
     alignItems: "center",
-    flexDirection: 'row',
+    flexDirection: "row",
     justifyContent: "center",
   },
   countRow: {
     flexDirection: "row",
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
   },
   label: {
     color: Colors.PrimaryText,

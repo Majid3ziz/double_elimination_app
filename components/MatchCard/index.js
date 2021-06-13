@@ -6,7 +6,6 @@ import AppContext from "@services/provider";
 import Button from "@components/smallButton";
 
 export default class MatchCard extends React.Component {
-
   constructor() {
     super();
     this.setWinner = this.setWinner.bind(this);
@@ -16,7 +15,7 @@ export default class MatchCard extends React.Component {
   state = {
     showPickWinner: false,
     selectedWinner: null,
-  }
+  };
 
   setWinner() {
     if (this.state.selectedWinner === null) {
@@ -33,12 +32,11 @@ export default class MatchCard extends React.Component {
   }
 
   opacityOfPlayer(id) {
-    return { opacity: this.state.showPickWinner ? this.state.selectedWinner === id ? 1 : 0.3 : 1 };
+    return { opacity: this.state.showPickWinner ? (this.state.selectedWinner === id ? 1 : 0.3) : 1 };
   }
 
   pickPlayer(id) {
-    if (this.state.showPickWinner)
-      this.setState({ selectedWinner: id });
+    if (this.state.showPickWinner) this.setState({ selectedWinner: id });
   }
 
   getWinner() {
@@ -58,12 +56,12 @@ export default class MatchCard extends React.Component {
     const langauge = this.context.state.language;
     return (
       <View style={styles.container}>
-        <Text style={[styles.label, { textAlign: 'center' }]}>{"#" + this.props.matchNumber}</Text>
-        <View style={styles.playersRow}>
+        <Text style={[styles.label, { textAlign: "center" }]}>{"#" + this.props.matchNumber}</Text>
+        <View style={styles.playersColumn}>
           <TouchableOpacity onPress={() => this.pickPlayer(this.props.firstPlayerID)}>
             <Text style={[styles.label, this.opacityOfPlayer(this.props.firstPlayerID)]}>{this.props.firstPlayerName}</Text>
           </TouchableOpacity>
-          <Text style={styles.label}>{langauge.vs}</Text>
+          <Text style={styles.bigLabel}>{langauge.vs}</Text>
           <TouchableOpacity onPress={() => this.pickPlayer(this.props.secondPlayerID)}>
             <Text style={[styles.label, this.opacityOfPlayer(this.props.secondPlayerID)]}>{this.props.secondPlayerName}</Text>
           </TouchableOpacity>
@@ -72,11 +70,8 @@ export default class MatchCard extends React.Component {
         <Text style={styles.label}>{langauge.winner + " " + this.getWinner()}</Text>
         <View style={styles.buttonsRow}>
           <Button onPress={this.state.showPickWinner ? this.setWinner : this.showPickWinner} text={this.state.showPickWinner ? langauge.confirm : langauge.pickWinner} backgroundColor={Colors.smallButtonColor} textColor={Colors.PrimaryText} btnStyle={styles.button} />
-          {this.state.showPickWinner ?
-            <Button onPress={this.cancel} text={langauge.cancel} textColor={Colors.PrimaryText} btnStyle={styles.button} />
-            : null}
+          {this.state.showPickWinner ? <Button onPress={this.cancel} text={langauge.cancel} textColor={Colors.PrimaryText} btnStyle={styles.button} /> : null}
         </View>
-
       </View>
     );
   }
@@ -86,40 +81,46 @@ MatchCard.contextType = AppContext;
 const styles = StyleSheet.create({
   container: {
     width: responsiveWidth(45),
-    height: responsiveHeight(20),
     borderRadius: 15,
     marginHorizontal: 10,
     marginBottom: 8,
     alignItems: "center",
-    justifyContent: 'center',
+    justifyContent: "center",
     elevation: 7,
     shadowOffset: { width: 0, height: 12 },
     shadowColor: "#000",
     shadowOpacity: 0.58,
     shadowRadius: 16.0,
+    padding: 20,
   },
-  playersRow: {
-    width: responsiveWidth(35),
+  playersColumn: {
     alignItems: "center",
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: "center",
+    flexWrap: "wrap",
   },
   buttonsRow: {
     alignItems: "center",
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginTop: 5
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginTop: 5,
   },
   label: {
     color: Colors.PrimaryText,
-    fontSize: responsiveFontSize(2),
+    fontSize: responsiveFontSize(1.85),
     fontWeight: "500",
     elevation: 5,
     textAlign: "center",
     marginHorizontal: 5,
   },
+  bigLabel: {
+    color: Colors.PrimaryText,
+    fontSize: responsiveFontSize(2),
+    fontWeight: "700",
+    elevation: 5,
+    textAlign: "center",
+  },
   button: {
     marginHorizontal: 5,
-    backgroundColor: Colors.smallButtonColor
-  }
+    backgroundColor: Colors.smallButtonColor,
+  },
 });
