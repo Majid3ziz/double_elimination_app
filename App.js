@@ -66,7 +66,7 @@ class App extends React.Component {
       return (
         <AppProvider
           value={{
-            state: this.state
+            state: this.state,
           }}
         >
           <AppNavigator />
@@ -74,8 +74,8 @@ class App extends React.Component {
       );
     }
     return (
-      <View style={{ flex: 1 }}>
-        <Image source={require("./res/splash_screen.jpg")} onLoad={this._cacheResourcesAsync} style={{ width: responsiveWidth(100), height: responsiveHeight(100) }} />
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+        <Image source={require("./res/splash_screen.jpg")} onLoad={this._cacheResourcesAsync} style={{ width: responsiveWidth(100), height: responsiveWidth(100) }} />
       </View>
     );
   }
