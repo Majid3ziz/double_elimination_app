@@ -8,10 +8,12 @@ import Spinner from "react-native-loading-spinner-overlay";
 import Colors from "@res/Colors";
 import TextPopup from "@components/TextPopup";
 import Button from "@components/smallButton";
-import { getTournaments } from "@services/scripts";
+import { getTournaments, deleteTournament } from "@services/scripts";
 import TournamentCard from "@components/TournamentCard";
-import { NavigationEvents } from 'react-navigation';
+import { NavigationEvents } from "react-navigation";
 import CustomHeader from "@components/CustomHeader";
+import { TouchableOpacity } from "react-native";
+import { Ionicons } from "react-native-vector-icons";
 
 export default class Homepage extends React.Component {
   constructor() {
@@ -24,7 +26,8 @@ export default class Homepage extends React.Component {
     loading: false,
     showTextPopup: false,
     TextPopupString: "",
-    tournaments: []
+    tournaments: [],
+    enableDelete: false,
   };
 
   componentDidMount() {
@@ -35,15 +38,23 @@ export default class Homepage extends React.Component {
     this.setState({ loading: true });
     const tournaments = await getTournaments();
     this.setState({ tournaments, loading: false });
-  }
+  };
 
   createTournament() {
-    this.props.navigation.navigate('CreateTournament');
+    this.props.navigation.navigate("CreateTournament");
   }
 
   viewTournament(index) {
-    this.props.navigation.navigate('ManageTournament', { tournament: this.state.tournaments[index] });
+    this.props.navigation.navigate("ManageTournament", { tournament: this.state.tournaments[index] });
   }
+
+  deleteTournament = async (index) => {
+    this.setState({ loading: true });
+    const tournaments = this.state.tournaments;
+    tournaments.splice(index, 1);
+    await deleteTournament(index);
+    this.setState({ tournaments, loading: false });
+  };
 
   render() {
     const langauge = this.context.state.language;
@@ -63,18 +74,25 @@ export default class Homepage extends React.Component {
         <ScrollView showsVerticalScrollIndicator={false}>
           <View style={styles.upperRow}>
             <Text style={styles.label}>{langauge.tournaments}</Text>
-            <Button onPress={this.createTournament} text={langauge.addTournament} textColor={Colors.PrimaryText} btnStyle={styles.button} />
+            <View style={styles.iconsRow}>
+              <TouchableOpacity onPress={() => this.setState({ enableDelete: !this.state.enableDelete })}>
+                <Ionicons name={"ios-remove-circle"} color={this.state.enableDelete ? Colors.redAlert : Colors.PrimaryColorDark} size={responsiveFontSize(5)} />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => this.createTournament()}>
+                <Ionicons name={"ios-add-circle"} color={Colors.PrimaryColorDark} size={responsiveFontSize(5)} />
+              </TouchableOpacity>
+            </View>
           </View>
 
           {this.state.tournaments.map((tournament, i) => (
-            <TournamentCard
-              key={i}
-              index={i}
-              viewTournament={this.viewTournament}
-              name={tournament.name}
-              playersCount={tournament.players.length}
-              image={"https://is4-ssl.mzstatic.com/image/thumb/Purple124/v4/8f/a3/57/8fa3572a-f506-7f21-5bc9-651c44ad30e8/source/512x512bb.jpg"}
-            />
+            <View style={styles.tournamentConatiner}>
+              <TournamentCard key={i} index={i} viewTournament={this.viewTournament} name={tournament.name} playersCount={tournament.players.length} image={"https://is4-ssl.mzstatic.com/image/thumb/Purple124/v4/8f/a3/57/8fa3572a-f506-7f21-5bc9-651c44ad30e8/source/512x512bb.jpg"} />
+              {this.state.enableDelete ? (
+                <TouchableOpacity onPress={() => this.deleteTournament(i)}>
+                  <Ionicons name={"ios-trash"} color={Colors.redAlert} size={responsiveFontSize(4)} />
+                </TouchableOpacity>
+              ) : null}
+            </View>
           ))}
         </ScrollView>
       </View>
@@ -98,15 +116,26 @@ const styles = StyleSheet.create({
     marginVertical: 7,
   },
   upperRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginVertical: 15,
     borderBottomWidth: 0.5,
-    borderBottomColor: Colors.borderColor
+    borderBottomColor: Colors.borderColor,
   },
   button: {
     marginHorizontal: 10,
-    backgroundColor: Colors.smallButtonColor
-  }
+    backgroundColor: Colors.smallButtonColor,
+  },
+  tournamentConatiner: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  iconsRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 10,
+  },
 });

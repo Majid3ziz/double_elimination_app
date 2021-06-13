@@ -54,7 +54,7 @@ export default class CreateTournament extends React.Component {
       players[i] = createPlayerObject(i, "");
     }
     this.setState({ players, showAddPlayers: true });
-  }
+  };
 
   validateNameAndPlayersNumber = async () => {
     const langauge = this.context.state.language;
@@ -72,7 +72,7 @@ export default class CreateTournament extends React.Component {
       return false;
     }
     return true;
-  }
+  };
 
   createTournament = async () => {
     this.setState({ loading: true });
@@ -140,7 +140,7 @@ export default class CreateTournament extends React.Component {
           ) : null}
 
           {this.state.players.map((value, i) => (
-            <InputField onChangeText={this.setPlayerName} stateKey={i} defaultValue={this.state.players[i].name} editable maxLength={50} style={styles.InputField} placeholder={langauge.player + " " + (i + 1) + " Name"} keyboardType={"default"} key={i} />
+            <InputField onChangeText={this.setPlayerName} stateKey={i} defaultValue={this.state.players[i].name} editable maxLength={20} style={styles.InputField} placeholder={langauge.player + " " + (i + 1) + " Name"} keyboardType={"default"} key={i} />
           ))}
           <Button onPress={this.state.showAddPlayers ? this.createTournament : this.showAddPlayers} text={this.state.showAddPlayers ? langauge.create : langauge.next} textColor={Colors.PrimaryText} btnStyle={styles.button} />
         </ScrollView>
@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
   },
   innerContainer: {
     marginTop: 30,
-    paddingBottom: 30
+    paddingBottom: 30,
   },
   fillLabel: {
     alignSelf: "center",
@@ -184,6 +184,6 @@ const styles = StyleSheet.create({
     width: responsiveWidth(30),
     alignSelf: "center",
     marginBottom: 30,
-    backgroundColor: Colors.smallButtonColor
+    backgroundColor: Colors.smallButtonColor,
   },
 });
