@@ -411,6 +411,8 @@ const styles = StyleSheet.create({
   matchesContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
+    justifyContent: "center",
+    alignItems: "center",
   },
   bracketRow: {
     flexDirection: "row",

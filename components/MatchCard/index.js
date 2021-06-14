@@ -80,9 +80,9 @@ export default class MatchCard extends React.Component {
 MatchCard.contextType = AppContext;
 const styles = StyleSheet.create({
   container: {
-    width: responsiveWidth(45),
+    width: responsiveWidth(42),
     borderRadius: 15,
-    marginHorizontal: 10,
+    marginHorizontal: 5,
     marginBottom: 8,
     alignItems: "center",
     justifyContent: "center",
@@ -92,6 +92,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.58,
     shadowRadius: 16.0,
     padding: 20,
+    backgroundColor: Colors.BackgroundColor,
   },
   playersColumn: {
     alignItems: "center",
